@@ -2,19 +2,41 @@
 
 ;; Our Library
 
+(defun != (a b)
+  (not (= a b)))
+
+
+(defun to_string (obj)
+  (cond ((numberp obj) (number-to-string obj))
+	((stringp obj) obj)))
+
 (setq stdout (get-buffer-create "stdout"))
 
 (defun printf (obj)
+  (let ((cur_buf (buffer-name)))
+    (set-buffer stdout)
+    (goto-char (point-max))
+    (princ obj stdout)
+    (set-buffer cur_buf)))
+
+(defun printf (obj)
+  (with-current-buffer stdout
+    (goto-char (point-max)))
   (princ obj stdout))
 
-(defun clear-buffer (buf)
+(defun clear_buffer (buf)
   "Clear a buffer."
   (interactive "BBuffer to clear: ")
   (with-current-buffer buf (erase-buffer)))
 
+(defun clear_stdout ()
+  "Clear the stdout buffer."
+  (interactive)
+  (clear_buffer stdout))
+
 ;; Key bindings
 
-(global-set-key (kbd "C-x C-<delete>") 'clear-buffer)
+(global-set-key (kbd "C-x C-<delete>") 'clear_stdout)
 
 ;; Math Functions
 

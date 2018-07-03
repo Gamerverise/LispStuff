@@ -6,29 +6,39 @@
   (list name children))
 
 (defun new_leaf_node (name)
-  (new_tree name '()))
+  (new_tree name nil))
 
 (defun get_node_name (node)
   (car node))
 
 (defun get_node_children (node)
-  (cdr node))
+  (car (cdr node)))
 
 (defun insert_child_after (node new_child index)
   (insert_after (get_node_children node) new_child index))
 
-(defun print_nodes (nodes indent)
+(defun sprint_nodes (nodes indent)
   (if nodes
-      (progn
-	(print_node (car nodes) indent)
-	(print_nodes (cdr nodes) indent))))
+      (concat
+       (sprint_node (car nodes) indent)
+       (sprint_nodes (cdr nodes) indent))
+    ""))
 
-(defun print_node (node indent)
-  (printf (get_node_name node))
-  (printf "\n")
-  (print_nodes (get_node_children node) indent))
+(defun sprint_node (node indent)
+  (concat
+   (make-string indent ?\s)
+   (to_string (get_node_name node))
+   "\n"
+   (sprint_nodes (get_node_children node) (+ indent 1))))
 
-(print_node bt2 0)
+(defun printf_node (node)
+  (printf (sprint_node node 0)))
+
+(defun debug_printf_node (node)
+  (clear_stdout)
+  (printf_node node))
+
+(debug_printf_node bt2)
 
 (defun binary_tree (depth)
   (binary_tree_x depth 1 (- (expt 2 (+ depth 1)) 1)))
@@ -46,12 +56,6 @@
 
 ;; Testing
 
-(setq xtree (new_leaf_node 'xtree))
-
-(setq btree (binary_tree 3))
-
-(print_tree btree)
-
-
+(setq bt0 (binary_tree 0))
+(setq bt1 (binary_tree 1))
 (setq bt2 (binary_tree 2))
-
