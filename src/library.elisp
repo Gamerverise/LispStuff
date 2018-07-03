@@ -1,0 +1,54 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Our Library
+
+(setq stdout (get-buffer-create "stdout"))
+
+(defun printf (obj)
+  (princ obj stdout))
+
+(defun clear-buffer (buf)
+  "Clear a buffer."
+  (interactive "BBuffer to clear: ")
+  (with-current-buffer buf (erase-buffer)))
+
+;; Key bindings
+
+(global-set-key (kbd "C-x C-<delete>") 'clear-buffer)
+
+;; Math Functions
+
+(defun factorial (n)
+       (if (= n 1)
+       	   1
+	   (* n (factorial (- n 1)))))
+
+
+(defun fact_iter (n)
+       (let ((result 1))
+       (dotimes (k n result)
+       		(setq result (* result (+ k 1))))))
+
+;; List functions
+
+(defun caddr (list) (cadr (cdr list)))
+
+(defun cnr (n list)
+       (if (= n 1)
+       (car list)
+       (cnr (- n 1) (cdr list))))
+
+(defun cnr_iter (n list)
+	 (dotimes (k (- n 1) (car list))
+	   (setq list (cdr list))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; List modification functions
+
+(defun insert_after (list value index)
+  (if (= index 0)
+      (setcdr list (cons value (cdr list)))
+    (insert_after (cdr list) value (- index 1))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

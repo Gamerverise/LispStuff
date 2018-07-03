@@ -1,0 +1,57 @@
+;; Tree data structuret
+
+;; A tree must have at least one node
+
+(defun new_tree (name children)
+  (list name children))
+
+(defun new_leaf_node (name)
+  (new_tree name '()))
+
+(defun get_node_name (node)
+  (car node))
+
+(defun get_node_children (node)
+  (cdr node))
+
+(defun insert_child_after (node new_child index)
+  (insert_after (get_node_children node) new_child index))
+
+(defun print_nodes (nodes indent)
+  (if nodes
+      (progn
+	(print_node (car nodes) indent)
+	(print_nodes (cdr nodes) indent))))
+
+(defun print_node (node indent)
+  (printf (get_node_name node))
+  (printf "\n")
+  (print_nodes (get_node_children node) indent))
+
+(print_node bt2 0)
+
+(defun binary_tree (depth)
+  (binary_tree_x depth 1 (- (expt 2 (+ depth 1)) 1)))
+
+(defun binary_tree_x (depth start end)
+  (let ((half (/ (+ start end) 2)))
+    (if (= depth 0)
+	(new_leaf_node half)
+      (new_tree
+       half
+       (list (binary_tree_x (- depth 1) start (- half 1))
+	     (binary_tree_x (- depth 1) (+ half 1) end))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Testing
+
+(setq xtree (new_leaf_node 'xtree))
+
+(setq btree (binary_tree 3))
+
+(print_tree btree)
+
+
+(setq bt2 (binary_tree 2))
+
