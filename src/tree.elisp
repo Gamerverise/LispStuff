@@ -2,6 +2,8 @@
 
 ;; A tree must have at least one node
 
+;; Node: a list where the first element is a label and the second is a list of children.
+
 (defun new_tree (name children)
   (list name children))
 
@@ -13,6 +15,9 @@
 
 (defun get_node_children (node)
   (car (cdr node)))
+
+(defun get_nth_child (node n)
+  (cnr (get_node_children node) n))
 
 (defun insert_child_after (node new_child index)
   (insert_after (get_node_children node) new_child index))
@@ -38,12 +43,10 @@
   (clear_stdout)
   (printf_node node))
 
-(debug_printf_node bt2)
-
 (defun binary_tree (depth)
-  (binary_tree_x depth 1 (- (expt 2 (+ depth 1)) 1)))
+  (numbered_binary_tree depth 1 (- (expt 2 (+ depth 1)) 1)))
 
-(defun binary_tree_x (depth start end)
+(defun numbered_binary_tree (depth start end)
   (let ((half (/ (+ start end) 2)))
     (if (= depth 0)
 	(new_leaf_node half)
@@ -59,3 +62,5 @@
 (setq bt0 (binary_tree 0))
 (setq bt1 (binary_tree 1))
 (setq bt2 (binary_tree 2))
+
+(debug_printf_node bt2)

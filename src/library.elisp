@@ -2,15 +2,63 @@
 
 ;; Our Library
 
+;; Compiling Variables
+
+(setq root_dir "c:\\home\\Gamerverise Q J\\Lisp Stuff\\src\\")
+
+(setq elisp_basenames_symbol
+      '(
+       library.elisp
+       tree.elisp
+       data_tree.elisp
+       ))
+
+(setq elisp_basenames_string
+      (mapcar 'symbol-name elisp_basenames_symbol))
+
+;; Shortcuts
+
+;; (save_project)
+;; (eval_project)
+
+;; Key Bindings
+
+(global-set-key (kbd "C-x C-<delete>") 'clear_stdout)
+;; (global-set-key (kbd "<f8>") 'commit_and_push)
+(global-set-key (kbd "<f9>") 'save_project)
+(global-set-key (kbd "<f12>") 'eval_project)
+
+;; Compiling
+
+(defun save_project ()
+  "Save our source files."
+  (interactive)
+  (mapc 'save-buffer elisp_basenames_symbol))
+
+(defun eval_project ()
+  "Evaluate some of the project source files."
+  (interactive)
+  (map-y-or-n-p
+   "Evaluate file %s? "
+   (lambda (base_filename)
+     (load-file (concat root_dir base_filename)))
+   elisp_basenames_string))
+;; (eval_project)
+
+;; Operators
+
 (defun != (a b)
   (not (= a b)))
 
+;; Conversion
 
 (defun to_string (obj)
   (cond ((numberp obj) (number-to-string obj))
 	((stringp obj) obj)))
 
 (setq stdout (get-buffer-create "stdout"))
+
+;; Printing
 
 (defun printf (obj)
   (let ((cur_buf (buffer-name)))
@@ -24,6 +72,8 @@
     (goto-char (point-max)))
   (princ obj stdout))
 
+;; Buffer Management
+
 (defun clear_buffer (buf)
   "Clear a buffer."
   (interactive "BBuffer to clear: ")
@@ -33,10 +83,6 @@
   "Clear the stdout buffer."
   (interactive)
   (clear_buffer stdout))
-
-;; Key bindings
-
-(global-set-key (kbd "C-x C-<delete>") 'clear_stdout)
 
 ;; Math Functions
 
@@ -51,22 +97,20 @@
        (dotimes (k n result)
        		(setq result (* result (+ k 1))))))
 
-;; List functions
+;; List Access
 
 (defun caddr (list) (cadr (cdr list)))
 
-(defun cnr (n list)
+(defun cnr (list n)
        (if (= n 1)
        (car list)
-       (cnr (- n 1) (cdr list))))
+       (cnr (cdr list) (- n 1))))
 
-(defun cnr_iter (n list)
+(defun cnr_iter (list n)
 	 (dotimes (k (- n 1) (car list))
 	   (setq list (cdr list))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; List modification functions
+;; List Modification
 
 (defun insert_after (list value index)
   (if (= index 0)

@@ -1,0 +1,32 @@
+;; data_tree format
+;;
+;; For parent node:
+;;
+;; ( (start_key   middle_key   end_key   num_values   num_nodes) (left_child right_child) )
+;;
+;; For leaf node:
+;;
+;; ( (key value ) () )
+
+(defun new_data_tree ()
+  '( (a mmmmmmmm z)  ())
+  )
+
+(defun get_range_start (tree)
+  (car (get_node_name tree)))
+
+(defun get_range_middle (tree)
+  (cadr (get_node_name tree)))
+
+(defun get_range_end (tree)
+  (caddr (get_node_name tree)))
+
+(defun data_tree_insert (tree key value)
+  (if (and (string> key (car (get_node_name tree)))
+	   (string<= key (cadar tree)))
+      (
+
+;; Test case
+
+(setq dtt (new_data_tree))
+(data_tree_insert dtt 'fred 20)
