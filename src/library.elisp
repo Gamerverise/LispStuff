@@ -2,9 +2,9 @@
 
 ;; Our Library
 
-;; Compiling Variables
+;; Compilation Variables
 
-(setq root_dir "c:\\home\\Gamerverise Q J\\Lisp Stuff\\src\\")
+(setq src_root_dir "c:\\home\\Gamerverise Q J\\Lisp Stuff\\src\\")
 
 (setq elisp_basenames_symbol
       '(
@@ -30,6 +30,9 @@
 
 ;; Compiling
 
+(defun src_file (filename)
+  (concat src_root_dir base_filename))
+
 (defun save_project ()
   "Save our source files."
   (interactive)
@@ -41,9 +44,25 @@
   (map-y-or-n-p
    "Evaluate file %s? "
    (lambda (base_filename)
-     (load-file (concat root_dir base_filename)))
+     (load-file (src_file  base_filename)))
    elisp_basenames_string))
 ;; (eval_project)
+
+;; Git
+
+(defun commit_and_push ()
+  "Add, commit, and push some of the project source files."
+  (interactive)
+  (map-y-or-n-p
+   "Add file %s for commit and push? "
+   (lambda (base_filename)
+     (call-process "git" nil "**Git Output" t "add" (src_file base_filename)))
+   elisp_basenames_string)
+;;  (call-process git nil **Git_Output t commit -m "Incremental")
+;;  (call-process git nil **Git_Output t push -u origin master))
+  )
+
+(commit_and_push)
 
 ;; Operators
 
