@@ -64,7 +64,7 @@
   )
 
 (commit_and_push)
-asdf
+
 ;; Operators
 
 (defun != (a b)
