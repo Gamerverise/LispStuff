@@ -56,7 +56,7 @@
   (map-y-or-n-p
    "Add file %s for commit and push? "
    (lambda (base_filename)
-     (call-process "git" nil "**Git Output" t "add" (src_file base_filename)))
+     (call-process "git" nil "**Git Output" t "add" "--verbose" (src_file base_filename)))
    elisp_basenames_string)
 ;;  (call-process git nil **Git_Output t commit -m "Incremental")
 ;;  (call-process git nil **Git_Output t push -u origin master))
