@@ -50,8 +50,6 @@
 
 ;; Git
 
-(call-process "git" nil "**Git Output" t "add" "--verbose" "c:/home/Gamerverise Q J/Lisp Stuff/src/library.elisp")
-asdf
 (defun commit_and_push ()
   "Add, commit, and push some of the project source files."
   (interactive)
