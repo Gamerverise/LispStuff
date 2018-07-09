@@ -53,6 +53,7 @@
 (defun commit_and_push ()
   "Add, commit, and push some of the project source files."
   (interactive)
+  (save-some-buffers)
   (map-y-or-n-p
    "Add file %s for commit and push? "
    (lambda (base_filename)
@@ -63,7 +64,7 @@
   )
 
 (commit_and_push)
-
+asdf
 ;; Operators
 
 (defun != (a b)
