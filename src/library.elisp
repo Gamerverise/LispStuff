@@ -50,19 +50,23 @@
 
 ;; Git
 
+(setq git_output_buf "** Git Output **")
+
 (defun commit_and_push ()
   "Add, commit, and push some of the project source files."
   (interactive)
   (save-some-buffers)
+  (generate-new-buffer git_output_buf)
+  (bprintf git_output_buf "\n")
   (map-y-or-n-p
    "Add file %s for commit and push? "
    (lambda (base_filename)
-     (call-process "git" nil "**Git Output" t "add" "--verbose" (src_file base_filename)))
+     (call-process "git" nil git_output_buf t "add" "--verbose" (src_file base_filename)))
    elisp_basenames_string)
-  (call-process "git" nil "**Git_Output" t "commit" "--verbose" "-m" "Work in progress")
-;;  (call-process "git" nil "**Git_Output" t "push" "-u" "origin" "master")
+  (call-process "git" nil git_output_buf t "commit" "--verbose" "-m" "Work in progress")
+;;  (call-process "git" nil git_output_buf t "push" "-u" "origin" "master")
   )
-;;
+
 (commit_and_push)
 
 ;; Operators
@@ -88,7 +92,10 @@
     (set-buffer cur_buf)))
 
 (defun printf (obj)
-  (with-current-buffer stdout
+  (bprintf stdout obj))
+
+(defun bprintf (buf obj)
+  (with-current-buffer buf
     (goto-char (point-max)))
   (princ obj stdout))
 
