@@ -1,8 +1,18 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
 ;; Our Library
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Builtin Redefinitions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compilation Variables
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq src_root_dir "c:\\home\\Gamerverise Q J\\Lisp Stuff\\src\\")
 
@@ -16,19 +26,25 @@
 (setq elisp_basenames_string
       (mapcar 'symbol-name elisp_basenames_symbol))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shortcuts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; (save_project)
-;; (eval_project)
+;;     (save_project)
+;;     (eval_project)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Key Bindings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (global-set-key (kbd "C-x C-<delete>") 'clear_stdout)
 ;; (global-set-key (kbd "<f8>") 'commit_and_push)
 (global-set-key (kbd "<f9>") 'save_project)
 (global-set-key (kbd "<f12>") 'eval_project)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compiling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun src_file (filename)
   (concat src_root_dir base_filename))
@@ -48,32 +64,67 @@
    elisp_basenames_string))
 ;; (eval_project)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Git
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq git_output_buf "** Git Output **")
+(setq git_io_buf "** Git I/O **")
+
+(defun start_git_shell ()
+    (if (not (get-buffer git_io_buf))
+	(progn
+	  (let ((cur_win (selected-window)))
+	    (shell git_io_buf)
+	    (select-window cur_win)))))
 
 (defun commit_and_push ()
   "Add, commit, and push some of the project source files."
   (interactive)
   (save-some-buffers)
-  (generate-new-buffer git_output_buf)
-  (bprintf git_output_buf "\n")
+  (start_git_shell)
+  (bprintf git_io_buf "\n")
   (map-y-or-n-p
    "Add file %s for commit and push? "
    (lambda (base_filename)
-     (call-process "git" nil git_output_buf t "add" "--verbose" (src_file base_filename)))
+;;     (call-process "git" nil git_io_buf t "add" "--verbose" (src_file base_filename)))
+;;   elisp_basenames_string)
+;;  (call-process "git" nil git_io_buf t "commit" "--verbose" "-m" "Work in progress")
+;;  (call-process "git" nil git_io_buf t "push" "-u" "origin" "master"))
+     (shell-command
+      (concat "git add --verbose " (src_file base_filename))
+      git_io_buf
+      git_io_buf))
+
    elisp_basenames_string)
-  (call-process "git" nil git_output_buf t "commit" "--verbose" "-m" "Work in progress")
-  (call-process "git" nil git_output_buf t "push" "-u" "origin" "master"))
+;;  (call-process "git" nil git_io_buf t "commit" "--verbose" "-m" "Work in progress")
+;;  (call-process "git" nil git_io_buf t "push" "-u" "origin" "master"))
+  )
 
 (commit_and_push)
 
+(defun send_shell_cmd (buf cmd)
+  (interactive)
+  (with-current-buffer buf
+    (end-of-buffer)
+    (princ (concat "git " cmd) (get-buffer buf))
+    (comint-send-input)))
+
+(defun git_cmd (cmd)
+  (interactive)
+  (send_shell_cmd git_io_buf cmd))
+
+(git_cmd "helloword")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Operators
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun != (a b)
   (not (= a b)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Conversion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun to_string (obj)
   (cond ((numberp obj) (number-to-string obj))
@@ -81,7 +132,9 @@
 
 (setq stdout (get-buffer-create "stdout"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Printing
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun printf (obj)
   (let ((cur_buf (buffer-name)))
@@ -96,9 +149,11 @@
 (defun bprintf (buf obj)
   (with-current-buffer buf
     (goto-char (point-max)))
-  (princ obj stdout))
+  (princ obj buf))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Buffer Management
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun clear_buffer (buf)
   "Clear a buffer."
@@ -110,7 +165,9 @@
   (interactive)
   (clear_buffer stdout))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Math Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun factorial (n)
        (if (= n 1)
@@ -123,7 +180,9 @@
        (dotimes (k n result)
        		(setq result (* result (+ k 1))))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; List Access
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun caddr (list) (cadr (cdr list)))
 
@@ -136,11 +195,11 @@
 	 (dotimes (k (- n 1) (car list))
 	   (setq list (cdr list))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; List Modification
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun insert_after (list value index)
   (if (= index 0)
       (setcdr list (cons value (cdr list)))
     (insert_after (cdr list) value (- index 1))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
