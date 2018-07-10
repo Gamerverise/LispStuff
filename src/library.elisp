@@ -62,7 +62,7 @@
   (call-process "git" nil "**Git_Output" t "commit" "--verbose" "-m" "Work in progress")
   (call-process "git" nil "**Git_Output" t "push" "-u" "origin" "master")
   )
-;;
+
 (commit_and_push)
 
 ;; Operators
