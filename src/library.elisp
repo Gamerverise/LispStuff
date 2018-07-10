@@ -64,9 +64,8 @@
      (call-process "git" nil git_output_buf t "add" "--verbose" (src_file base_filename)))
    elisp_basenames_string)
   (call-process "git" nil git_output_buf t "commit" "--verbose" "-m" "Work in progress")
-;;  (call-process "git" nil git_output_buf t "push" "-u" "origin" "master")
-  )
-''
+  (call-process "git" nil git_output_buf t "push" "-u" "origin" "master"))
+
 (commit_and_push)
 
 ;; Operators
