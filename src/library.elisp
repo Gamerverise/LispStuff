@@ -116,7 +116,7 @@
   (git_cmd 'commit '--verbose '-m "Work in progress")
   (git_cmd 'push '-u 'origin 'master))
 
-;;k
+;;j
 
 ;;(commit_and_push)
 
