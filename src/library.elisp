@@ -30,6 +30,7 @@
        "library.elisp"
        "tree.elisp"
        "data_tree.elisp"
+       "kp_nav.elisp"
        ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,7 +124,7 @@
 ;; <Caps Lock>
 ;; <Num Lock>
 
-(w32-register-hot-key [s-])
+;; (w32-register-hot-key [s-])
 
 ;; (global-set-key (kbd "<f12>") 'eval_project)
 
@@ -146,6 +147,17 @@
 (defun select_prev_window ()
   (interactive)
   (select-window (previous-window)))
+
+(defun close_other_window ())
+
+(defun close_current_window ())
+
+(defun autocomplete ())
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Window and Buffer Management
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compiling
@@ -210,10 +222,6 @@
    git_repo_relative_filenames)
   (git_cmd 'commit '--verbose '-m "Work in progress")
   (git_cmd 'push '-u 'origin 'master))
-
-;;j
-
-;;(commit_and_push)
 
 (defun send_shell_cmd_raw (buf cmd)
   (interactive)

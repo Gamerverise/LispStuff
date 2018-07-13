@@ -1,0 +1,77 @@
+(setq kpn_overlay_left 0)                 ;; column number
+(setq kpn_overlay_top 0)                  ;; line number
+(setq kpn_overlay_right 0)                ;; column number
+(setq kpn_overlay_bottom 0)               ;; line number
+
+(setq kpn_overlay_vert_line_1 0)
+(setq kpn_overlay_vert_line_2 0)
+(setq kpn_overlay_horiz_line_1 0)
+(setq kpn_overlay_horiz_line_2 0)
+
+(defun kp_nav_start ()
+  (setq kpn_overlay_left 0)
+  (setq kpn_overlay_top 0)
+  (setq kpn_overlay_right 0)
+  (setq kpn_overlay_bottom 0)
+
+  (setq kpn_overlay_vert_line_1 0)
+  (setq kpn_overlay_vert_line_2 0)
+  (setq kpn_overlay_horiz_line_1 0)
+  (setq kpn_overlay_horiz_line_2 0)
+  )
+
+(defun kp_nav_finish ()
+  ;; remove the overlay
+  (goto-line 0)
+  (goto-column 0)
+  )
+
+(defun kp_nav_draw_overlay ()
+  )
+
+(defun kp_nav_update_overlay (left top right bottom)
+  (setq kpn_overlay_left (* kpn_overlay_left left)))
+  (setq kpn_overlay_right (* kpn_overlay_right right)))
+  (setq kpn_overlay_top (* kpn_overlay_top top)))
+  (setq kpn_overlay_bottom (* kpn_overlay_bottom bottom)))
+
+  ;; redraw with overlay commands here
+  )
+
+(setq 1/3 (/ 1.0 3))
+(setq 2/3 (/ 2.0 3))
+
+(setq kp_nav_zoom_table
+      '(
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	(1 1/3 1/3 1)
+	))
+
+(defun kp_nav_handle_key (keypad_num)
+  (apply kp_nav_update_overlay (nth (- keypad_num 1) kp_nav_zoom_table)))
+
+(defun kp_nav_handle_key_1 () (kp_nav_handle_key 1))
+(defun kp_nav_handle_key_2 () (kp_nav_handle_key 2))
+(defun kp_nav_handle_key_3 () (kp_nav_handle_key 3))
+(defun kp_nav_handle_key_4 () (kp_nav_handle_key 4))
+(defun kp_nav_handle_key_5 () (kp_nav_handle_key 5))
+(defun kp_nav_handle_key_6 () (kp_nav_handle_key 6))
+(defun kp_nav_handle_key_7 () (kp_nav_handle_key 7))
+(defun kp_nav_handle_key_8 () (kp_nav_handle_key 8))
+(defun kp_nav_handle_key_9 () (kp_nav_handle_key 9))
+
+(defun kp_nav_handle_key_0 ())
+(defun kp_nav_handle_key_dot ())
+
+(defun keypad_navigate ()
+  "Logarithmic geometric navigation."
+  (interactive)
+  
+  )
