@@ -8,6 +8,8 @@
 ;; Global Configurations
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(add-to-list 'auto-mode-alist '("\\.elisp\\'" . elisp-byte-code-mode))
+
 ;; (setq explicit-shell-file-name "C:\\cygwin64\\bin\\bash")
 ;; (setq explicit-bash-args '("--login"))
 
@@ -41,7 +43,89 @@
 ;; Key Bindings
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(global-set-key (kbd "<f12>") 'eval_project)
+;; Key/Character Pipeline
+
+;; Hypothetically speaking,
+;;
+;; physical key
+;;      |
+;;      |     key with "k" label pressed by user
+;;      V
+;; BIOS interpretation
+;;      |
+;;      |     (translates the "Fn" sequences)
+;;      |     BIOS passes hardware key data to OS (includes modifiers pressed at the same time)
+;;      |     {keynum, Caps-Lock flag, Num-Lock flag, L-Shift flag, ...}
+;;      |     {53, t, f, f ...} (in other words, you intended capital k)
+;;      V
+;; OS kernel or system library
+;;      |
+;;      |     packages the hardware key data with keyboard layout and locale info
+;;      |     Looks at location 53 in the keyboard layout table, it finds ASCII k.
+;;      |     Since Caps-Lock is pressed, it passes ASCII code 75
+;;      |     {"K", {53, t, f, f ...}}
+;;      |         --OR--
+;;      |     Locale language is Hindi
+;;      |     And locale subsystem takes a few more keypresses to come up with some sort of Hindi script character in Unicode
+;;      |     {some kind of 4-byte unicode character, {{...}, {...}, ...}}
+;;      V
+;; GUI subsystem
+;;      |
+;;      |     May intercept some keypresses for GUI shortcuts
+;;      |     It might have its own keyboard layout and locale info
+;;      |     Passes along keypress/character/shortcut info to application, possibly doing its own translations
+;;      V
+;; Application
+;;      |
+;;      |     May interpret the key data from OS/library/GUI however it likes
+;;      |     In the case of Emacs (and some other programs), the appication has its own
+;;      |     model of keymap, locale, control sequences
+;;      V
+;; User customization of application
+;;      |
+;;      |     User writes Elisp to handle the multiply-translated key data
+;;      V
+;; User sees something
+
+
+;; Logical Modifier Keys
+
+;; <Meta>
+;; <Super>
+;; <Hyper>
+
+;; <L-Ctrl>
+;; <R-Ctrl>
+
+;; <L-Shift>
+;; <R-Shift>
+
+;; <L-Alt>
+;; <R-Alt>
+
+;; <Windows>
+;; <apps>
+
+;; Hardware Modifier Keys
+
+;; <L-Ctrl>
+;; <R-Ctrl>
+
+;; <L-Shift>
+;; <R-Shift>
+
+;; <L-Alt>
+;; <R-Alt>
+
+;; <Windows>
+;; <Properties>
+
+;; <Caps Lock>
+;; <Num Lock>
+
+(w32-register-hot-key [s-])
+
+;; (global-set-key (kbd "<f12>") 'eval_project)
 
 (global-set-key (kbd "<f9>") 'save_project)
 (global-set-key (kbd "<f8>") 'commit_and_push)
@@ -49,8 +133,19 @@
 
 (global-set-key (kbd "C-x C-<delete>") 'clear_stdout)
 
-;;(defun kill_buffer_prev_window ()
-  
+(global-set-key (kbd "<f12>") 'select_prev_window)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Window and Buffer Management
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun kill_buffer_prev_window ()
+  (interactive)
+  (kill-buffer (window-buffer (previous-window))))
+
+(defun select_prev_window ()
+  (interactive)
+  (select-window (previous-window)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Compiling
