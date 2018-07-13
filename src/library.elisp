@@ -113,6 +113,8 @@
   (git_cmd 'commit '--verbose '-m "Work in progress")
   (git_cmd 'push '-u 'origin 'master))
 
+;;k
+
 ;;(commit_and_push)
 
 (defun send_shell_cmd_raw (buf cmd)
