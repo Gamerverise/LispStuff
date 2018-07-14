@@ -1,23 +1,64 @@
+(global-set-key (kbd "M-*") 'query-replace-regexp)
+
+(global-set-key (kbd "<kp-0>") 'kp_nav_start)
+
 (setq kpn_overlay_left 0)                 ;; column number
-(setq kpn_overlay_top 0)                  ;; line number
-(setq kpn_overlay_right 0)                ;; column number
 (setq kpn_overlay_bottom 0)               ;; line number
+(setq kpn_overlay_right 0)                ;; column number
+(setq kpn_overlay_top 0)                  ;; line number
 
 (setq kpn_overlay_vert_line_1 0)
 (setq kpn_overlay_vert_line_2 0)
 (setq kpn_overlay_horiz_line_1 0)
 (setq kpn_overlay_horiz_line_2 0)
 
-(defun kp_nav_start ()
-  (setq kpn_overlay_left 0)
-  (setq kpn_overlay_top 0)
-  (setq kpn_overlay_right 0)
-  (setq kpn_overlay_bottom 0)
+(window-top-line)
+(window-edges)
 
-  (setq kpn_overlay_vert_line_1 0)
-  (setq kpn_overlay_vert_line_2 0)
-  (setq kpn_overlay_horiz_line_1 0)
-  (setq kpn_overlay_horiz_line_2 0)
+(defun hline (char len)
+  (interactive)
+  (save-excursion
+   (insert-char char len)))
+
+(defun get_line_len ()
+  (interactive)
+  (save-excursion
+    (end-of-line)
+    (current-column)))
+
+(defun get_longest_line_len (end_line)
+  (interactive)
+  (save-excursion
+    (let ((max_len 0))
+      (while (<= (line-number-at-pos) end_line)
+	(if (> (get_line_len) max_len)
+	    (setq max_len (get_line_len)))
+	(next-line))
+      max_len)))
+
+(defun rectify (end_line)
+  (interactive)
+  (save-excursion
+    (let ((max_len (get_longest_line_len end_line)))
+      (while (<= (line-number-at-pos) end_line)
+	(if (< (get_line_len) max_len)
+	    (progn 
+	      (end-of-line)
+	      (hline ?- (- max_len (current-column)))))
+	(next-line)))))
+
+(defun kp_nav_start ()
+  (interactive)
+
+  (setq kpn_overlay_left 0)
+  (setq kpn_overlay_bottom (window-body-height))
+  (setq kpn_overlay_right (window-body-width))
+  (setq kpn_overlay_top 0)
+  
+  (setq kpn_overlay_vert_line_1  (* 1/3 kpn_overlay_right))
+  (setq kpn_overlay_vert_line_2  (* 2/3 kpn_overlay_right))
+  (setq kpn_overlay_horiz_line_1 (* 1/3 kpn_overlay_bottom))
+  (setq kpn_overlay_horiz_line_2 (* 2/3 kpn_overlay_bottom))
   )
 
 (defun kp_nav_finish ()
@@ -29,11 +70,11 @@
 (defun kp_nav_draw_overlay ()
   )
 
-(defun kp_nav_update_overlay (left top right bottom)
-  (setq kpn_overlay_left (* kpn_overlay_left left)))
-  (setq kpn_overlay_right (* kpn_overlay_right right)))
-  (setq kpn_overlay_top (* kpn_overlay_top top)))
-  (setq kpn_overlay_bottom (* kpn_overlay_bottom bottom)))
+(defun kp_nav_update_overlay (left bottom right top)
+  (setq kpn_overlay_left (* kpn_overlay_left left))
+  (setq kpn_overlay_bottom (* kpn_overlay_bottom bottom))
+  (setq kpn_overlay_right (* kpn_overlay_right right))
+  (setq kpn_overlay_top (* kpn_overlay_top top))
 
   ;; redraw with overlay commands here
   )
@@ -41,17 +82,33 @@
 (setq 1/3 (/ 1.0 3))
 (setq 2/3 (/ 2.0 3))
 
+;; Zoom table goes in sequential order (1 - 9)
+
+;; Let (l, b) be the old origin
+;; Let (w, h) be the old width and height
+
+;; new_width  = 1/3 * old_width
+;; new_height = 1/3 * old_height
+
+;; new_left   = old_left   + table_left * new_width
+;; new_bottom = old_bottom - table_left * new_height
+;; new_right  = old_right  - table_left * new_width
+;; new_top    = old_top    + table_left * new_height
+
 (setq kp_nav_zoom_table
+
+;;       left   bottom  right  top
+      
       '(
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
-	(1 1/3 1/3 1)
+	(0     0       2/3    2/3)    ;; kp_1
+	(1/3   0       1/3    2/3)    ;; kp_2
+	(2/3   0       0      2/3)    ;; kp_3
+	(0     1/3     2/3    1/3)    ;; kp_4
+	(1/3   1/3     1/3    1/3)    ;; kp_5
+	(2/3   1/3     0      1/3)    ;; kp_6
+	(0     2/3     2/3    0  )    ;; kp_7
+	(1/3   2/3     1/3    0  )    ;; kp_8
+	(2/3   2/3     0      0  )    ;; kp_9
 	))
 
 (defun kp_nav_handle_key (keypad_num)
