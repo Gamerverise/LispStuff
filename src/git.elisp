@@ -1,0 +1,64 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Git
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq git_executable "c:\\cygwin64\\bin\\git")
+
+(setq git_io_buf_name "** Git I/O **")
+
+(defun get_git_buf ()
+  (get-buffer git_io_buf_name))
+
+(defun start_git_shell ()
+  (interactive)
+    (if (not (get-buffer git_io_buf_name))
+	(progn
+	  (let ((cur_win (selected-window)))
+	    (shell git_io_buf_name)
+	    (select-window cur_win)))))
+
+(defun close_git_shell ()
+  (interactive)
+  (if (get-buffer git_io_buf_name)
+      (progn
+	(kill-process git_io_buf_name)
+	(sleep-for 0 100)
+	(kill-buffer git_io_buf_name))))
+
+(defun commit_and_push ()
+  "Add, commit, and push some of the project source files."
+  (interactive)
+  (save-some-buffers)
+  (start_git_shell)
+  (bprintf (get_git_buf) "\n")
+  (map-y-or-n-p
+   "Add file %s for commit and push? "
+   (lambda (git_repo_relative_filename)
+     (git_cmd 'add '--verbose git_repo_relative_filename))
+   (git_repo_relative_filenames))
+  (git_cmd 'commit '--verbose '-m "Work in progress")
+  (git_cmd 'push '-u 'origin 'master))
+
+(defun send_shell_cmd_raw (buf cmd)
+  (interactive)
+  (with-current-buffer buf
+    (end-of-buffer)
+    (princ cmd buf)
+    (comint-send-input)))
+
+(defun send_shell_cmd (buf cmd &rest args)
+  (interactive)
+  (send_shell_cmd_raw buf (apply 'mk_shell_cmd cmd args)))
+
+(defun git_cmd (&rest git_args)
+  (interactive)
+  (start_git_shell)
+  (apply 'send_shell_cmd (get_git_buf) git_executable git_args))
+
+(defun mk_shell_cmd (cmd &rest args)
+  (interactive)
+  (mapconcat
+   (lambda (arg)
+     (shell-quote-argument (to_string arg)))
+   (cons cmd args)
+   " "))

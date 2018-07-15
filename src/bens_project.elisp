@@ -1,0 +1,77 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Shortcuts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;     (save_project)
+;;     (eval_project)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Project Files
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq src_root_dir "c:\\home\\Gamerverise Q J\\Lisp Stuff\\src\\")
+
+;; t = working
+;; nil = not working
+
+(setq git_repo_relative_filenamez
+      '(
+	;; .emacs works, but it's not part of the project,
+	;; so we ignore it for loading the project
+
+	(".emacs"                      . nil)
+
+	;; bens_project.elisp must always work because we load it in the .emacs file
+	
+	("bens_project.elisp"          . t)
+
+	;; tree.elisp works, but is not complete, and we're not using it right now
+	
+	("tree.elisp"                  . nil)
+	
+	("elisp_extensions.elisp"      . t)
+	("git.elisp"                   . t)
+	("debugging.elisp"             . t)
+	("math.elisp"                  . t)
+	("lists.elisp"                 . t)
+	("stdio.elisp"                 . t)
+	("strings.elisp"               . t)
+
+	("key_bindings.elisp"          . nil)
+	("window_management.elisp"     . nil)
+	("data_tree.elisp"             . nil)
+	("kp_nav.elisp"                . nil)
+       ))
+
+(defun git_repo_relative_filenames ()
+  (interactive)
+  (mapcar
+   (lambda (arg)
+     (car arg))
+   git_repo_relative_filenamez
+   ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Saving
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun save_project ()
+  "Save our source files."
+  (interactive)
+  (mapc 'save-buffer (git_repo_relative_filenames)))
+(save_project)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Compiling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun src_full_filename (git_repo_relative_filename)
+  (concat src_root_dir git_repo_relative_filename))
+
+(defun eval_project ()
+  "Evaluate some of the project source files."
+  (interactive)
+  (map-y-or-n-p
+   "Evaluate file %s? "
+   (lambda (git_repo_relative_filename)
+     (load-file (double_quote (src_full_filename git_repo_relative_filename))))
+   (git_repo_relative_filenames)))

@@ -1,0 +1,19 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Debugging Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun debug_symbol (symbol)
+  (interactive)
+  (list
+   (list "value: " (symbol-value symbol))
+   (list "name: " (symbol-name symbol))
+   (list "function: " (symbol-function symbol))
+   (list "property list: " (symbol-plist symbol))
+   (list "file: " (symbol-file symbol))))
+
+(defun symbol_type (obj)
+  (cond ((numberp obj) "number")
+	((symbolp obj) "symbol")
+	((stringp obj) "string")
+	((listp obj)   "list")
+	((arrayp obj)  "array")))

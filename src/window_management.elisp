@@ -1,0 +1,22 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Window and Buffer Management
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun kill_buffer_prev_window ()
+  (interactive)
+  (kill-buffer (window-buffer (previous-window))))
+
+(defun select_prev_window ()
+  (interactive)
+  (select-window (previous-window)))
+
+(defun close_other_window ())
+
+(defun close_current_window ())
+
+(defun autocomplete ())
+
+(defun clear_buffer (buf)
+  "Clear a buffer."
+  (interactive "BBuffer to clear: ")
+  (with-current-buffer buf (erase-buffer)))

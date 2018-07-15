@@ -1,0 +1,32 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Stdout
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq stdout (get-buffer-create "** stdout **"))
+
+(defun clear_stdout ()
+  "Clear the stdout buffer."
+  (interactive)
+  (clear_buffer stdout))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Printing
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun printf (obj)
+  (interactive)
+  (let ((cur_buf (buffer-name)))
+    (set-buffer stdout)
+    (goto-char (point-max))
+    (princ obj stdout)
+    (set-buffer cur_buf)))
+
+(defun printf (obj)
+  (interactive)
+  (bprintf stdout obj))
+
+(defun bprintf (buf obj)
+  (interactive)
+  (with-current-buffer buf
+    (goto-char (point-max)))
+  (princ obj buf))

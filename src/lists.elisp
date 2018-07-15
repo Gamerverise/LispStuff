@@ -1,0 +1,23 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; List Access
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun caddr (list) (cadr (cdr list)))
+
+(defun cnr (list n)
+       (if (= n 1)
+       (car list)
+       (cnr (cdr list) (- n 1))))
+
+(defun cnr_iter (list n)
+	 (dotimes (k (- n 1) (car list))
+	   (setq list (cdr list))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; List Modification
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun insert_after (list value index)
+  (if (= index 0)
+      (setcdr list (cons value (cdr list)))
+    (insert_after (cdr list) value (- index 1))))
