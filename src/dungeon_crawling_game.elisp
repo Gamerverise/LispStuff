@@ -2,7 +2,34 @@
 
 ;; Object-oriented Constructs
 
-(defun def_class (class_name prop_tbl method_tbl)
+(defmacro def_class (class_name &rest members)
+
+  `(setq ,(concat __class class_name)
+
+	 ,(let ((props '())
+		(methods '())
+		(remaining_members members))
+
+	    (while (!= remaining_members nil)
+	      (let ((member (car remaining_member))
+		    (type (car member)))
+
+		(cond ((= type def_var)
+
+		       (let ((prop_def (cdr member))
+			     (name (car prop_def))
+			     (value (cadr prop_def)))
+			 
+		       (setq props (append props (cons (name value))))))
+
+		      ((= type def_method)
+
+		       (let ((method_def (cdr member))
+			     (name (car prop_def))
+			     (value (cadr prop_def)))
+		    )
+	      (setq remaining_members (cdr members))
+	      )
   )
 
 (defun new (class_name prop_tbl)
@@ -10,9 +37,21 @@
 
 ;; Map Class
 
-(def_class 'map
-  '(pic light_pic width height)
-  '(get ...))
+(def_class map
+
+  (def_var    pic         nil)
+  (def_var    light_pic   nil)
+  (def_var    width       0)
+  (def_var    height      0)
+
+  (def_method map (&key pic light_pic width height))
+
+  (def_method get_width ()
+    (string-width (car pic)))
+
+  (def_method get_height ()
+    (length pic))
+  )
 
 ;; Dad's Map
 

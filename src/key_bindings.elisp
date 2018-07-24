@@ -61,6 +61,7 @@
 
 ;; <L-Alt>
 ;; <R-Alt>
+;; <Meta>
 
 ;; <Windows>
 ;; <apps>
@@ -82,7 +83,63 @@
 ;; <Caps Lock>
 ;; <Num Lock>
 
-;; (w32-register-hot-key [s-])
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Emacs Key-binding Model
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Natural Language Keys
+;;   Generate character events
+
+;; Function Keys
+;;   Generate key symbol events
+;;
+;;   backspace, tab, newline, return, delete
+;;   left, up, right, down
+;;   kp-add, kp-decimal, kp-divide, ...
+;;   kp-0, kp-1, ...
+;;   kp-f1, kp-f2, kp-f3, kp-f4
+;;   kp-home, kp-left, kp-up, kp-right, kp-down
+;;   kp-prior, kp-next, kp-end, kp-begin, kp-insert, kp-delete
+
+;; Logical Modifier Keys
+;;
+;;   meta             "M-"         
+;;   control          "C-"         <L-Ctrl>
+;;   shift            "S-"         <Shift>
+;;   hyper            "H-"         <R-Ctrl>
+;;   super            "s-"         <Windows>
+;;   alt              "A-"         <Alt>
+
+;; Use (event-modifiers event) or (event-basic-type event)
+
+;; Translating Sequences of Events?
+
+;; (event-modifiers (read-event))
+;; (event-basic-type (read-event))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Our UI Design
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; <Alt> is <Meta>
+;; <Windows> is <Super>
+
+;; Most or all of our custom global bindings use the <Super> modifier
+;; Otherwise, mostly we stick with the built-in bindings
+;; Maybe we put the very most important ones on Function keys
+;; Maybe we rearrange some of the most important built-in bindings
+
+;; Features Given Custom Key Groups
+
+;; * window management
+;; * navigation and scrolling
+;; * keypad nav
+;; * git
+;; * Ben's project management
+
+;; * basic editing, maybe
+
+(w32-register-hot-key [s-])
 
 ;; (global-set-key (kbd "<f12>") 'eval_project)
 
@@ -96,3 +153,67 @@
 
 (global-set-key (kbd "<C-down>") 'scroll-up-line)
 (global-set-key (kbd "<C-up>") 'scroll-down-line)
+
+;; Keypad Nav Keys
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Standard Editing, Navigation, and Scrolling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; Character
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (global-set-key (kbd "\C-f") 'forward-char)
+;; (global-set-key (kbd "\C-b") 'backward-char)
+
+;; (global-set-key (kbd "<deletechar>") 'delete-forward-char)
+;; <deletechar> translated from <delete>
+
+;; (global-set-key (kbd "DEL") 'backward-delete-char-untabify
+;; DEL translated from <backspace>
+
+;; Word
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Line
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(global-set-key (kbd "") 'move-beginning-of-line)
+(global-set-key (kbd "") 'move-end-of-line)
+
+;; Paragraph
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (global-set-key (kbd "\M-h") 'mark-paragraph)
+;; (global-set-key (kbd "\M-} or <C-down>") 'forward-paragraph)
+;; (global-set-key (kbd "\M-{ or <C-up>") 'backward-paragraph)
+;; (global-set-key (kbd "M-g") 'fill-paragraph)
+;; (global-set-key (kbd "\M-o \M-s") 'center-paragraph)
+(global-set-key (kbd "") 'kill-paragraph)
+(global-set-key (kbd "") 'sort-paragraphs)
+(global-set-key (kbd "") 'transpose-paragraphs)
+
+;; Page
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (global-set-key (kbd "\C-x ]") 'forward-page)
+;; (global-set-key (kbd "\C-x [") 'backward-page)
+;; (global-set-key (kbd "\C-x \C-p") 'mark-page)
+(global-set-key (kbd "") 'sort-pages)
+(global-set-key (kbd "") 'what-page)
+
+;; Document
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Scrolling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
+
+
+
+;; Available Keys
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
