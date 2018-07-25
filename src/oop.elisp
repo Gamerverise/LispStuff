@@ -1,0 +1,80 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Object-oriented Programming
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defmacro def_class (class_name &rest members)
+
+  `(setq ,(intern (concat "__class__" (symbol-name class_name))) nil
+	 ))
+
+  `(setq ,(intern (concat "__class__" class_name)) nil
+	 ))
+
+(setq ghy 5)
+(defun identity_zzz (x) x)
+(defmacro identity_zzz (x) x)
+(identity_zzz '''ghy)
+
+(symbolp (quote (listp (quote ghy))))
+(quote 3)
+
+(def_class Gap)
+__class__Gap
+	 ,(let ((props '())
+		(methods '())
+		(remaining_members members))
+
+	    (while (!= remaining_members nil)
+	      (let* ((member (car remaining_member))
+		     (type (car member)))
+
+		(cond ((= type def_var)
+
+		       (let* ((prop_def (cdr member))
+			      (name (car prop_def))
+			      (value (cadr prop_def)))
+			 
+			 (setq props (append props '(name value)))))
+
+		      ((= type def_method)
+
+		       (let* ((method_def (cdr member))
+			      (name (car method_def))
+			      (args (cadr method_def))
+			      (body (caddr method_def)))
+
+			 (setq methods (append methods '(name args value))))))
+
+		(setq remaining_members (cdr members))))
+
+	    (cons (vconcat props) (vconcat methods))))))
+
+(defun new (class_name prop_tbl)
+  )
+
+;; Map Class
+
+(def_class Map
+
+  (def_var    pic         nil)
+  (def_var    light_pic   nil)
+  (def_var    width       0)
+  (def_var    height      0)
+
+  (def_method map (&key pic light_pic width height))
+
+  (def_method get_width ()
+    (string-width (car pic)))
+
+  (def_method get_height ()
+    (length pic))
+  )
+
+;; Dad's Map
+
+(setq dads_map (new 'map))
+(setq bens_map (new 'map))
+
+(dads_map get pic)
+(dads_map set pic '("---"))
+(dads_map get_starting_location)
