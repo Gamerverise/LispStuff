@@ -85,23 +85,37 @@
 
 ;; Functions
 
+(defun cur_map ()
+  (lvl-map (game_state-cur_lvl game_state)))
+
+(defun cur_map_pic ()
+  (map-pic (lvl-map (game_state-cur_lvl game_state))))
+
+(defun cur_lvl_title ()
+  (lvl-title (game_state-cur_lvl game_state)))
+
+(defun cur_lvl_narrative ()
+  (lvl-narrative (game_state-cur_lvl game_state)))
+
 (defun start_game ()
   (interactive)
   (switch-to-buffer-other-window game_buf)
-;;  (internal-show-cursor nil nil)
   (setq cursor-type nil)
   (redraw))
 
 (defun redraw ()
   (interactive)
   (clear_buffer game_buf)
-  (insert ((cur_lvl_get) 'title))
+  (insert (cur_lvl_title))
+  (insert "\n\n")
+  (insert (cur_lvl_narrative))
+  (insert "\n\n")
   (mapc
    (lambda (line)
      (insert line "\n"))
-   (gethash 'pic (cur_map)))
-  (insert )
+   (cur_map_pic))
   (change_map_char (cur_map) (cur_loc_x) (cur_loc_y) player)
+  (insert "Gold: " (game_state-gold game_state) " HP: " (game_state-hp game_state))
   )
 
 (defun change_char (x y char)
