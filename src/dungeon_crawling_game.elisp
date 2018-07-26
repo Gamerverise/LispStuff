@@ -1,68 +1,30 @@
 (load-file "window_management.elisp")
 
-;; Object-oriented Constructs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Structs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro def_class (class_name &rest members)
+(cl-defstruct map
+  pic
+  lighted_pic
+  width
+  height)
 
-  `(setq ,(concat __class class_name)
+(cl-defstruct lvl
+  title
+  narrative
+  map
+  start_loc)
 
-	 ,(let ((props '())
-		(methods '())
-		(remaining_members members))
+(cl-defstruct game_state
+  cur_lvl
+  player_loc
+  gold
+  hp)
 
-	    (while (!= remaining_members nil)
-	      (let ((member (car remaining_member))
-		    (type (car member)))
-
-		(cond ((= type def_var)
-
-		       (let ((prop_def (cdr member))
-			     (name (car prop_def))
-			     (value (cadr prop_def)))
-			 
-		       (setq props (append props (cons (name value))))))
-
-		      ((= type def_method)
-
-		       (let ((method_def (cdr member))
-			     (name (car prop_def))
-			     (value (cadr prop_def)))
-		    )
-	      (setq remaining_members (cdr members))
-	      )
-  )
-
-(defun new (class_name prop_tbl)
-  )
-
-;; Map Class
-
-(def_class map
-
-  (def_var    pic         nil)
-  (def_var    light_pic   nil)
-  (def_var    width       0)
-  (def_var    height      0)
-
-  (def_method map (&key pic light_pic width height))
-
-  (def_method get_width ()
-    (string-width (car pic)))
-
-  (def_method get_height ()
-    (length pic))
-  )
-
-;; Dad's Map
-
-(setq dads_map (new 'map))
-(setq bens_map (new 'map))
-
-(bens_map 'get 'pic)
-
-(setq game_buf (get-buffer-create "** Game **"))
-
-(setq dads_map_hash (make-hash-table :test 'eq))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq dads_map_pic '(
 	      "+-----------------+"
@@ -70,7 +32,7 @@
 	      "|-- |       |?|???|"
 	      "|   |       |?|???|"
 	      "|   +#------+ +   |"
-	      "|@                |"
+	      "|                 |"
 	      "+-----------------+"
 	      ))
 
@@ -84,12 +46,30 @@
 	      "+-----------------+"
 	      ))
 
-(puthash    'get          (lambda (prop) (gethash prop dads_map)  dads_map_method_tbl)
+(setq dads_map
+      (make-map
+       :pic           dads_map_pic
+       :lighted_pic   dads_map_lighted_pic
+       :width         (string-width (car dads_map_pic))
+       :height        (length dads_map_pic)))
 
-(puthash    'pic          dads_map_pic                         dads_map_hash)
-(puthash    'lighted_pic  dads_map_lighted_pic                 dads_map_hash)
-(puthash    'width        (string-width (car dads_map_pic))    dads_map_hash)
-(puthash    'height       (length dads_map_pic)                dads_map_hash)
+(setq dads_lvl
+      (make-lvl
+       :title         "Dad's Level"
+       :narrative     "You've reached Dad's dungeon. Great treasures await! But be careful ..."
+       :map           dads_map
+       :start_loc     (cons 1 1)))
+
+(setq game_state
+      (make-game_state
+       :cur_lvl       dads_lvl
+       :player_loc    (lvl-start_loc dads_lvl)
+       :gold          100
+       :hp            10))
+
+(setq game_buf (get-buffer-create "** Game **"))
+
+;; Character Graphics
 
 (setq       player            "@")
 (setq       gold              "$")
@@ -103,27 +83,7 @@
 (setq       sword             "/")
 (setq       shield            ")")
 
-(defun dads_lvl_get (prop)
-  (gethash prop dads_lvl_hash))
-
-(setq dads_lvl_hash (make-hash-table :test 'eq))
-
-(puthash    'map              dads_map_hash                dads_lvl_hash)
-(puthash    'title            "Dad's Level"           dads_lvl_hash)
-(puthash    'start_loc        (cons 1 1)              dads_lvl_hash)
-(puthash    'narrative
-	    "You've reached Dad's dungeon. Great treasures await! But be careful ..."
-	    dads_lvl_hash)
-
-(defun game_state_get (prop)
-  (gethash prop game_state_hash))
-
-(setq game_state_hash (make-hash-table :test 'eq))
-
-(puthash    'cur_lvl_get      dads_lvl_get                      game_state_hash)
-(puthash    'player_loc       (gethash 'start_loc dads_lvl)     game_state_hash)
-(puthash    'gold             0                                 game_state_hash)
-(puthash    'hp               10                                game_state_hash)
+;; Functions
 
 (defun start_game ()
   (interactive)
@@ -143,28 +103,6 @@
   (insert )
   (change_map_char (cur_map) (cur_loc_x) (cur_loc_y) player)
   )
-
-;; Game State Access
-
-(defun cur_lvl_title ()
-  (game_state_get 'cur_lvl)
-  ()
-
-(defun cur_lvl_narrative ()
-  )
-
-(defun cur_map ()
-  (gethash 'map (gethash 'cur_lvl game_state)))
-
-(cur_map)
-
-(defun cur_loc_x ()
-  (car (gethash 'player_loc game_state)))
-
-(defun cur_loc_y ()
-  (cdr (gethash 'player_loc game_state)))
-
-;; Drawing Functions
 
 (defun change_char (x y char)
   (interactive)
