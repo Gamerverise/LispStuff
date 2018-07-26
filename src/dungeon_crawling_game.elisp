@@ -18,7 +18,7 @@
 
 (cl-defstruct game_state
   cur_lvl
-  player_loc
+  loc
   gold
   hp)
 
@@ -63,7 +63,7 @@
 (setq game_state
       (make-game_state
        :cur_lvl       dads_lvl
-       :player_loc    (lvl-start_loc dads_lvl)
+       :loc           (lvl-start_loc dads_lvl)
        :gold          100
        :hp            10))
 
@@ -87,6 +87,12 @@
 
 (defun cur_map ()
   (lvl-map (game_state-cur_lvl game_state)))
+
+(defun cur_loc_x ()
+  (car (game_state-player_loc game_state)))
+
+(defun cur_loc_y ()
+  (cdr (game_state-player_loc game_state)))
 
 (defun cur_map_pic ()
   (map-pic (lvl-map (game_state-cur_lvl game_state))))
@@ -127,7 +133,7 @@
 
 (defun change_map_char (map x y char)
   (interactive)
-  (change_char x (- (gethash 'height map) y) char))
+  (change_char x (- (map-height map) y) char))
 
 ;; Game Start
 
