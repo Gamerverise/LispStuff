@@ -1,0 +1,230 @@
+(load-file "window_management.elisp")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Structs
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(cl-defstruct map
+  pic
+  lighted_pic
+  width
+  height)
+
+(cl-defstruct lvl
+  title
+  narrative
+  map
+  start_loc_x
+  start_loc_y)
+
+(cl-defstruct game_state
+  cur_lvl
+  loc_x
+  loc_y
+  gold
+  hp)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq dads_map_pic '(
+	      "+-----------------+"
+	      "|???|      *|?|???|"
+	      "|-- |       |?|???|"
+	      "|   |       |?|???|"
+	      "|   +#------+ +   |"
+	      "|                 |"
+	      "+-----------------+"
+	      ))
+
+(setq dads_map_lighted_pic '(
+	      "+-----------------+"
+	      "|^  |       |&|$$$|"
+	      "|-- |       | |sSs|"
+	      "|   |       | |) /|"
+	      "|   +#------+ +   |"
+	      "|                 |"
+	      "+-----------------+"
+	      ))
+
+(setq dads_loc_x 1)
+(setq dads_loc_y 1)
+
+(setq dads_map
+      (make-map
+       :pic           dads_map_pic
+       :lighted_pic   dads_map_lighted_pic
+       :width         (string-width (car dads_map_pic))
+       :height        (length dads_map_pic)))
+
+(setq dads_lvl
+      (make-lvl
+       :title         "Dad's Level"
+       :narrative     "You've reached Dad's dungeon. Great treasures await! But be careful ..."
+       :map           dads_map
+       :start_loc_x   dads_loc_x
+       :start_loc_y   dads_loc_y))
+
+(setq game_state
+      (make-game_state
+       :cur_lvl       dads_lvl
+       :loc_x         (lvl-start_loc_x dads_lvl)
+       :loc_y         (lvl-start_loc_y dads_lvl)
+       :gold          100
+       :hp            10))
+
+(setq game_buf (get-buffer-create "** Game **"))
+
+;; Character Graphics
+
+(setq       player            ?@)
+(setq       gold              ?$)
+(setq       door              ?#)
+(setq       dark              ??)
+(setq       torch             ?*)
+(setq       key               ?&)
+(setq       trap              ?^)
+(setq       dragon            ?S)
+(setq       mini_dragon       ?s)
+(setq       sword             ?/)
+(setq       shield            ?))
+
+(setq       hwall             ?-)
+(setq       vwall             ?|)
+(setq       cwall             ?+)
+
+(setq       collision_objs    (list hwall vwall cwall door dark))
+
+;; Controls
+
+(defun go_up ()
+  (if (is_colliding 0 1)
+      (go_nowhere)
+    (cl-incf (game_state-loc_y game_state))))
+
+(defun go_down ()
+  (if (is_colliding 0 -1)
+      (go_nowhere)
+    (cl-decf (game_state-loc_y game_state))))
+
+(defun go_left ()
+  (if (is_colliding -1 0)
+      (go_nowhere)
+    (cl-decf (game_state-loc_x game_state))))
+
+(defun go_right ()
+  (if (is_colliding 1 0)
+      (go_nowhere)
+    (cl-incf (game_state-loc_x game_state))))
+
+(defun go_nowhere ()
+  (cl-incf (game_state-loc_x game_state) 0)
+  (cl-incf (game_state-loc_y game_state) 0))
+
+(defun is_colliding (x y)
+  (search-backward "@")
+  (setq prev_x (current-column))
+  (goto-line (- (line-number-at-pos) y))
+  (forward-char (+ prev_x x))
+  (setq value nil)
+  (dolist (obj collision_objs value)
+    (if (not (eq value t))
+	(setq value (eq (following-char) obj))
+      (setq value t))))
+
+;; (eq (check_map_char (cur_map) (+ (cur_loc_x) x) (+ (cur_loc_y) y)) obj)
+
+;; (defun go_dir (x y)
+;;   (setq is_colliding (eq (check_map_char (cur_map) (+ (cur_loc_x) x) (+ (cur_loc_y) y)) hwall))
+;;   (if (not (eq is_colliding t))
+;;       (cond
+;;        ((and (= x 0) (= y 1))  (go_up))
+;;        ((and (= x 0) (= y -1)) (go_down))
+;;        ((and (= x -1) (= y 0)) (go_left))
+;;        ((and (= x 1) (= y 0))  (go_right))
+;;        )
+;;     (go_nowhere)
+;;     (setq (game_state-hp game_state) (+ (game_state-hp game_state) 1))
+;;     ))
+
+;; Functions
+
+(defun cur_map ()
+  (lvl-map (game_state-cur_lvl game_state)))
+
+(defun cur_loc_x ()
+  (game_state-loc_x game_state))
+
+(defun cur_loc_y ()
+  (game_state-loc_y game_state))
+
+(defun cur_map_pic ()
+  (map-pic (lvl-map (game_state-cur_lvl game_state))))
+
+(defun cur_lvl_title ()
+  (lvl-title (game_state-cur_lvl game_state)))
+
+(defun cur_lvl_narrative ()
+  (lvl-narrative (game_state-cur_lvl game_state)))
+
+(defun start_game ()
+  (interactive)
+  (switch-to-buffer-other-window game_buf)
+  (auto-fill-mode)
+  (setq cursor-type nil)
+  (setq game_exit nil)
+  (redraw)
+  (while (eq game_exit nil)
+    (cl-case (read-key)
+      ('up (go_up))
+      ('down (go_down))
+      ('left (go_left))
+      ('right (go_right))
+      (?q (setq game_exit t)))
+    (redraw)
+    )
+  )
+
+(defun redraw ()
+  (interactive)
+  (clear_buffer game_buf)
+  (mapc
+   (lambda (line)
+     (insert line "\n"))
+   (cur_map_pic))
+  (change_map_char (cur_map) (cur_loc_x) (cur_loc_y) player)
+  (beginning-of-buffer)
+  (insert (cur_lvl_title))
+  (insert "\n\n")
+  (insert (cur_lvl_narrative))
+  (insert "\n\n")
+  (end-of-buffer)
+  (insert "\n\n")
+  (insert "Gold: " (number-to-string (game_state-gold game_state)) " HP: " (number-to-string (game_state-hp game_state)))
+  )
+
+(defun change_char (x y char)
+  (interactive)
+  (goto-line y)
+  (forward-char x)
+  (delete-char 1)
+  (insert char))
+
+(defun change_map_char (map x y char)
+  (interactive)
+  (change_char x (- (map-height map) y) char))
+
+(defun check_char (x y)
+  (interactive)
+  (goto-line y)
+  (forward-char x)
+  (preceding-char))
+
+(defun check_map_char (map x y)
+  (interactive)
+  (check_char x (- (map-height map) y)))
+
+;; Game Start
+
+(start_game)
